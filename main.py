@@ -3,7 +3,7 @@ import pyheif
 from PIL import Image, ExifTags
 import piexif
 from geopy.geocoders import Nominatim
-from datetime import datetime
+from datetime import datetime,date
 import random
 import shutil
 import streamlit as st
@@ -226,7 +226,11 @@ def main():
             "iPhone X",
         ]
         selected_device = st.selectbox("📱 Select Device", device_options)
-        selected_date = st.date_input("📅 Select Date")
+        max_date = date(2024, 10, 11)
+        selected_date = st.date_input(
+            "📅 Select Date",
+            max_value=max_date,
+        )
         time_options = ["day", "night", "random"]
         selected_time = st.selectbox("🕒 Select Time of Day", time_options)
     
