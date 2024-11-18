@@ -226,6 +226,7 @@ def main():
             "iPhone X",
             "iPhone XS Max",
             "iPhone 7",
+            "iPhone 7 Plus",
             "iPhone 8"
         ]
         selected_device = st.selectbox("📱 Select Device", device_options)
