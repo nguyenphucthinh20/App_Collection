@@ -224,6 +224,9 @@ def main():
             "iPhone 11 Pro Max",
             "iPhone 11 Pro",
             "iPhone X",
+            "iPhone XS Max",
+            "iPhone 7",
+            "iPhone 8"
         ]
         selected_device = st.selectbox("📱 Select Device", device_options)
         max_date = date(2024, 10, 11)

@@ -116,7 +116,7 @@ class HeicProcessor:
 def main():
     processor = HeicProcessor(user_agent="your_app_name_here")
     result = processor.convert_heic_to_jpg(
-        "1107Thao/3-5 images/P12S002/assets/IMG_9097.HEIC", 
+        "processed_images (5)/P006S005IMG001.jpg", 
         "output.jpg"
     )
     processor.print_image_info(result)
