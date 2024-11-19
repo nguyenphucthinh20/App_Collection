@@ -63,13 +63,10 @@ class HeicProcessor:
 
     def modify_image_metadata(self, image_path, output_path, new_device=None, new_date=None, day_or_night=None):
         try:
-            # Lấy tên file và phần mở rộng
             base_name, ext = os.path.splitext(os.path.basename(image_path))
-            
-            # Tạo đường dẫn đầy đủ cho file output
             output_file = os.path.join(output_path, f"{base_name}.jpg")
             
-            # Chuyển đổi HEIC sang JPEG nếu là file HEIC
+            # Xử lý định dạng .HEIC
             if ext.lower() == '.heic':
                 heif_file = pyheif.read(image_path)
                 image = Image.frombytes(
@@ -81,18 +78,36 @@ class HeicProcessor:
                     heif_file.stride,
                 )
                 
-                # Copy EXIF data từ file HEIC
+                exif_dict = {}
                 for metadata in heif_file.metadata or []:
                     if metadata['type'] == 'Exif':
                         exif_dict = piexif.load(metadata['data'])
                         break
                 else:
                     exif_dict = {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
+            
+            # Xử lý các định dạng khác
             else:
-                # Nếu là file JPEG, đọc ảnh và fix orientation
                 image = Image.open(image_path)
-                image = self.fix_image_orientation(image)
-                exif_dict = piexif.load(image_path)
+                exif_dict = piexif.load(image.info.get('exif', b'')) if 'exif' in image.info else {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
+
+            # Kiểm tra và xóa ảnh nếu có description
+            if "0th" in exif_dict:
+                if piexif.ImageIFD.ImageDescription in exif_dict["0th"]:
+                    print(f"Found ImageDescription in {image_path}. Deleting the file.")
+                    os.remove(image_path)
+                    return False
+                if piexif.ImageIFD.XPComment in exif_dict["0th"]:
+                    print(f"Found XPComment in {image_path}. Deleting the file.")
+                    os.remove(image_path)
+                    return False
+
+            if "Exif" in exif_dict and piexif.ExifIFD.UserComment in exif_dict["Exif"]:
+                user_comment = exif_dict["Exif"][piexif.ExifIFD.UserComment]
+                if b'Douyin' in user_comment or b'douyin_beauty_me' in user_comment:
+                    print(f"Found UserComment related to Douyin in {image_path}. Deleting the file.")
+                    os.remove(image_path)
+                    return False
 
             # Thay đổi model thiết bị nếu được chỉ định
             if new_device and "0th" in exif_dict:
