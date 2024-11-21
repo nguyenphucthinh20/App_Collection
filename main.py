@@ -57,8 +57,8 @@ if st.session_state['authentication_status']:
             "📅 Select Date",
             max_value=max_date,
         )
-        time_options = ["day", "night", "random"]
-        selected_time = st.selectbox("🕒 Select Time of Day", time_options)
+        # time_options = ["day", "night", "random"]
+        # selected_time = st.selectbox("🕒 Select Time of Day", time_options)
         authenticator.logout()
         st.write(f'Welcome *{st.session_state["name"]}*')
     # File uploader
@@ -95,7 +95,7 @@ if st.session_state['authentication_status']:
                             temp_file_path,
                             new_device=selected_device,
                             new_date=selected_date,
-                            day_or_night=selected_time
+                            # day_or_night=selected_time
                         )
                         
                         if output_file and os.path.exists(output_file):

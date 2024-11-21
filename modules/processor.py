@@ -61,7 +61,7 @@ class HeicProcessor:
         except (AttributeError, KeyError, IndexError):
             return image
 
-    def modify_image_metadata(self, image_path, output_path, new_device=None, new_date=None, day_or_night=None):
+    def modify_image_metadata(self, image_path, output_path, new_device=None, new_date=None):
         try:
             base_name, ext = os.path.splitext(os.path.basename(image_path))
             output_file = os.path.join(output_path, f"{base_name}.jpg")
@@ -85,8 +85,6 @@ class HeicProcessor:
                         break
                 else:
                     exif_dict = {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
-            
-            # Xử lý các định dạng khác
             else:
                 image = Image.open(image_path)
                 exif_dict = piexif.load(image.info.get('exif', b'')) if 'exif' in image.info else {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
@@ -113,23 +111,24 @@ class HeicProcessor:
             if new_device and "0th" in exif_dict:
                 exif_dict["0th"][piexif.ImageIFD.Model] = new_device.encode('utf-8')
 
-            # Thay đổi ngày nếu được chỉ định
+            # Thay đổi ngày nhưng giữ nguyên giờ phút giây
             if new_date:
                 try:
-                    # date_obj = datetime.strptime(new_date, '%d/%m/%Y')
-                    date_obj = new_date
+                    # Lấy giờ phút giây từ metadata gốc
+                    original_time = None
+                    if "0th" in exif_dict and piexif.ImageIFD.DateTime in exif_dict["0th"]:
+                        original_datetime = exif_dict["0th"][piexif.ImageIFD.DateTime].decode('utf-8')
+                        original_time = original_datetime.split(' ')[1]
+                    elif "Exif" in exif_dict and piexif.ExifIFD.DateTimeOriginal in exif_dict["Exif"]:
+                        original_datetime = exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode('utf-8')
+                        original_time = original_datetime.split(' ')[1]
                     
-                    # Random giờ dựa trên day_or_night
-                    if day_or_night == 'day':
-                        random_hour = random.randint(8, 16)
-                    elif day_or_night == 'night':
-                        random_hour = random.randint(18, 23)
-                    else:
-                        random_hour = random.randint(0, 23)
+                    # Nếu không có thời gian gốc, sử dụng thời gian mặc định 12:00:00
+                    if not original_time:
+                        original_time = "12:00:00"
 
-                    random_minute = random.randint(0, 59)
-                    random_second = random.randint(0, 59)
-                    new_datetime = f"{date_obj.strftime('%Y:%m:%d')} {random_hour:02}:{random_minute:02}:{random_second:02}"
+                    # Kết hợp ngày mới với thời gian gốc
+                    new_datetime = f"{new_date.strftime('%Y:%m:%d')} {original_time}"
                     datetime_bytes = new_datetime.encode('utf-8')
                     
                     # Cập nhật các trường datetime
@@ -140,7 +139,7 @@ class HeicProcessor:
                         exif_dict["Exif"][piexif.ExifIFD.DateTimeDigitized] = datetime_bytes
                     
                 except ValueError as e:
-                    print(f"Invalid date format. Please use dd/mm/yyyy. Error: {e}")
+                    print(f"Invalid date format. Error: {e}")
                     return False
 
             # Loại bỏ thông tin Orientation để tránh xoay ảnh
@@ -165,7 +164,7 @@ class HeicProcessor:
             print(f"Error modifying metadata: {e}")
             return False
 
-def process_images_in_folder_or_file(input_path, new_device=None, new_date=None, day_or_night=None):
+def process_images_in_folder_or_file(input_path, new_device=None, new_date=None):
     processor = HeicProcessor()
 
     # Tạo tên folder output
@@ -193,7 +192,7 @@ def process_images_in_folder_or_file(input_path, new_device=None, new_date=None,
                 output_path,
                 new_device=new_device,
                 new_date=new_date,
-                day_or_night=day_or_night
+                # day_or_night=day_or_night
             )
 
             if success:
@@ -207,7 +206,7 @@ def process_images_in_folder_or_file(input_path, new_device=None, new_date=None,
             output_path,
             new_device=new_device,
             new_date=new_date,
-            day_or_night=day_or_night
+            # day_or_night=day_or_night
         )
 
         if success:
@@ -332,15 +331,15 @@ def process_images_in_folder_or_file(input_path, new_device=None, new_date=None,
 
 # if __name__ == "__main__":
 #     main()
-# def main():
-#     input_path = "1107Thao/6-10 images/P12S007/assets/IMG_5560.HEIC"  # Thay thế bằng đường dẫn tới file hoặc folder
+def main():
+    input_path = "1107Thao/6-10 images/P12S007/assets/IMG_5560.HEIC"  # Thay thế bằng đường dẫn tới file hoặc folder
     
-#     process_images_in_folder_or_file(
-#         input_path,
-#         new_device="iPhone 14 Pro Max",
-#         new_date="25/12/2023",
-#         day_or_night="night"
-#     )
+    process_images_in_folder_or_file(
+        input_path,
+        new_device="iPhone 14 Pro Max",
+        new_date="25/12/2023",
+        day_or_night="night"
+    )
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
