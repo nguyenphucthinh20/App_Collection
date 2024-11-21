@@ -5,3 +5,4 @@ piexif
 geopy
 streamlit-authenticator
 geopy
+pillow_heif
