@@ -168,11 +168,20 @@ def main():
                     </iframe>
                 '''
                 st.components.v1.html(map_data, height=450)
+
             else:
                 st.error("Không thể xác định được địa điểm.")
 
         except Exception as e:
             st.error(f"Có lỗi xảy ra: {str(e)}")
-
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style='text-align: center'>
+            <p>Made with ❤️ by ThinhNP</p>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 if __name__ == "__main__":
     main()
