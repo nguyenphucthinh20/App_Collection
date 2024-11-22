@@ -36,27 +36,33 @@ class HeicProcessor:
             print(f"Error while fetching address: {e}")
             return "Address not found"
 
-    def fix_image_orientation(self, image):
+    def fix_image_orientation(self, image, heif_metadata=None):
         try:
-            for orientation in ExifTags.TAGS.keys():
-                if ExifTags.TAGS[orientation] == 'Orientation':
-                    break
-            exif = image._getexif()
-            if exif is not None and orientation in exif:
-                if exif[orientation] == 2:
-                    image = image.transpose(Image.FLIP_LEFT_RIGHT)
-                elif exif[orientation] == 3:
-                    image = image.transpose(Image.ROTATE_180)
-                elif exif[orientation] == 4:
-                    image = image.transpose(Image.FLIP_TOP_BOTTOM)
-                elif exif[orientation] == 5:
-                    image = image.transpose(Image.ROTATE_90).transpose(Image.FLIP_LEFT_RIGHT)
-                elif exif[orientation] == 6:
-                    image = image.transpose(Image.ROTATE_270)
-                elif exif[orientation] == 7:
-                    image = image.transpose(Image.ROTATE_270).transpose(Image.FLIP_LEFT_RIGHT)
-                elif exif[orientation] == 8:
-                    image = image.transpose(Image.ROTATE_90)
+            if heif_metadata:  # Xử lý cho file HEIC
+                for metadata in heif_metadata:
+                    if metadata['type'] == 'Exif':
+                        exif_dict = piexif.load(metadata['data'])
+                        if piexif.ImageIFD.Orientation in exif_dict.get("0th", {}):
+                            orientation = exif_dict["0th"][piexif.ImageIFD.Orientation]
+                            if orientation == 6:  # Xoay 90 độ
+                                image = image.transpose(Image.ROTATE_270)
+                            elif orientation == 8:  # Xoay -90 độ
+                                image = image.transpose(Image.ROTATE_90)
+                            elif orientation == 3:  # Xoay 180 độ
+                                image = image.transpose(Image.ROTATE_180)
+                        break
+            else:  # Xử lý cho file JPG
+                for orientation in ExifTags.TAGS.keys():
+                    if ExifTags.TAGS[orientation] == 'Orientation':
+                        break
+                exif = image._getexif()
+                if exif is not None and orientation in exif:
+                    if exif[orientation] == 3:
+                        image = image.transpose(Image.ROTATE_180)
+                    elif exif[orientation] == 6:
+                        image = image.transpose(Image.ROTATE_270)
+                    elif exif[orientation] == 8:
+                        image = image.transpose(Image.ROTATE_90)
             return image
         except (AttributeError, KeyError, IndexError):
             return image
@@ -77,6 +83,8 @@ class HeicProcessor:
                     heif_file.mode,
                     heif_file.stride,
                 )
+                # Fix orientation cho HEIC
+                image = self.fix_image_orientation(image, heif_file.metadata)
                 
                 exif_dict = {}
                 for metadata in heif_file.metadata or []:
@@ -87,6 +95,8 @@ class HeicProcessor:
                     exif_dict = {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
             else:
                 image = Image.open(image_path)
+                # Fix orientation cho JPG
+                image = self.fix_image_orientation(image)
                 exif_dict = piexif.load(image.info.get('exif', b'')) if 'exif' in image.info else {'0th': {}, 'Exif': {}, 'GPS': {}, '1st': {}, 'thumbnail': None}
 
             # Kiểm tra và xóa ảnh nếu có description
@@ -148,7 +158,7 @@ class HeicProcessor:
 
             # Lưu lại EXIF data vào ảnh trong thư mục output
             exif_bytes = piexif.dump(exif_dict)
-            image.save(output_file, format="JPEG", exif=exif_bytes, quality=95,optimize=True)
+            image.save(output_file, format="JPEG", exif=exif_bytes, quality=95)
             
             # Xác nhận thay đổi
             verification = piexif.load(output_file)
