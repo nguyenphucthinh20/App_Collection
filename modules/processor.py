@@ -50,11 +50,11 @@ class HeicProcessor:
                 elif exif[orientation] == 4:
                     image = image.transpose(Image.FLIP_TOP_BOTTOM)
                 elif exif[orientation] == 5:
-                    image = image.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_90)
+                    image = image.transpose(Image.ROTATE_90).transpose(Image.FLIP_LEFT_RIGHT)
                 elif exif[orientation] == 6:
                     image = image.transpose(Image.ROTATE_270)
                 elif exif[orientation] == 7:
-                    image = image.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_270)
+                    image = image.transpose(Image.ROTATE_270).transpose(Image.FLIP_LEFT_RIGHT)
                 elif exif[orientation] == 8:
                     image = image.transpose(Image.ROTATE_90)
             return image
@@ -148,7 +148,7 @@ class HeicProcessor:
 
             # Lưu lại EXIF data vào ảnh trong thư mục output
             exif_bytes = piexif.dump(exif_dict)
-            image.save(output_file, format="JPEG", exif=exif_bytes, quality=95)
+            image.save(output_file, format="JPEG", exif=exif_bytes, quality=95,optimize=True)
             
             # Xác nhận thay đổi
             verification = piexif.load(output_file)
