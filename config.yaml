@@ -32,7 +32,16 @@ credentials:
       logged_in: False # Will be managed automatically
       password: abc@123 # Will be hashed automatically
       roles: # Optional
-      - viewer      
+      - viewer
+    dqn:
+      email: dqn@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      first_name: N
+      last_name: D Q N
+      logged_in: False # Will be managed automatically
+      password: dqn@123 # Will be hashed automatically
+      roles: # Optional
+      - viewer
 oauth2: # Optional
   google: # Follow instructions: https://developers.google.com/identity/protocols/oauth2
     client_id: # To be filled
