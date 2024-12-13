@@ -45,8 +45,8 @@ credentials:
     ngocdien:
       email: ngocdien@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
-      first_name: N
-      last_name: D Q N
+      first_name: Dien
+      last_name: Ngoc
       logged_in: False # Will be managed automatically
       password: ngocdien@123 # Will be hashed automatically
       roles: # Optional
@@ -54,8 +54,8 @@ credentials:
     sangnhan:
       email: sangnhan@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
-      first_name: N
-      last_name: D Q N
+      first_name: Sang
+      last_name: Nhan
       logged_in: False # Will be managed automatically
       password: sangnhan@123 # Will be hashed automatically
       roles: # Optional
@@ -63,8 +63,8 @@ credentials:
     hungpham:
       email: hungpham@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
-      first_name: N
-      last_name: D Q N
+      first_name: Hung  
+      last_name: Pham
       logged_in: False # Will be managed automatically
       password: hungpham@123 # Will be hashed automatically
       roles: # Optional
