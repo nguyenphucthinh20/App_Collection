@@ -10,7 +10,7 @@ credentials:
       first_name: Thinh
       last_name: Nguyen Phuc
       logged_in: False # Will be managed automatically
-      password: abc@123 # Will be hashed automatically
+      password: abc@@123 # Will be hashed automatically
       roles: # Optional
       - admin
       - editor
@@ -21,7 +21,7 @@ credentials:
       first_name: Oai
       last_name: Nguyen Van
       logged_in: False # Will be managed automatically
-      password: abc@123 # Will be hashed automatically
+      password: abc@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
     thuthao:
@@ -30,7 +30,7 @@ credentials:
       first_name: Thao
       last_name: Vo Thi Thu
       logged_in: False # Will be managed automatically
-      password: abc@123 # Will be hashed automatically
+      password: abc@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
     dqn:
@@ -39,7 +39,7 @@ credentials:
       first_name: N
       last_name: D Q N
       logged_in: False # Will be managed automatically
-      password: dqn@123 # Will be hashed automatically
+      password: dqn@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
     ngocdien:
@@ -48,7 +48,7 @@ credentials:
       first_name: Dien
       last_name: Ngoc
       logged_in: False # Will be managed automatically
-      password: ngocdien@123 # Will be hashed automatically
+      password: ngocdien@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
     sangnhan:
@@ -57,7 +57,7 @@ credentials:
       first_name: Sang
       last_name: Nhan
       logged_in: False # Will be managed automatically
-      password: sangnhan@123 # Will be hashed automatically
+      password: sangnhan@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
     hungpham:
@@ -66,7 +66,7 @@ credentials:
       first_name: Hung  
       last_name: Pham
       logged_in: False # Will be managed automatically
-      password: hungpham@123 # Will be hashed automatically
+      password: hungpham@@123 # Will be hashed automatically
       roles: # Optional
       - viewer
 oauth2: # Optional
